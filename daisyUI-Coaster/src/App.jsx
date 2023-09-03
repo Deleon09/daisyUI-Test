@@ -1,4 +1,5 @@
-import HeroBatman from './components/HeroBatman';
+//import HeroBatman from './components/HeroBatman';
+import HeroImages from './components/HeroImages';
 import NavBar from './components/NavBar';
 
 function App() {
@@ -6,7 +7,8 @@ function App() {
   return (
     <>
       <NavBar />
-      <HeroBatman /> 
+      {/* <HeroBatman />  */}
+      <HeroImages />
     </>
   )
 }
