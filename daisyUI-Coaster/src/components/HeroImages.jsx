@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import axios from 'axios';
+import { ImagesContext } from '../context/images/ImagesContext';
+import { types } from '../types/Types';
 
 const HeroImages = () => {
 
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { imagesState, dispatch } = useContext(ImagesContext);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -19,8 +20,15 @@ const HeroImages = () => {
         data.append('title', title);
         data.append('description', description);
         data.append('image', image);
+        dispatch({
+            type: types.startLoading
+        });
         axios.post('http://localhost:4000/images/add', data).then((res) => {
             console.log(res);
+            dispatch({
+                type: types.uploadImage,
+                payload: res.data
+            });
         });
         clear();
     }
@@ -34,14 +42,15 @@ const HeroImages = () => {
     useEffect(() => {
         axios.get('http://localhost:4000/')
         .then((response) => {
-            setData(response.data);
-            setLoading(false);
+            dispatch({
+                type: types.loadImages,
+                payload: response.data
+            });
         })
         .catch((error) => {
             console.error('Error en la solicitud GET:', error);
-            setLoading(false);
         });
-    }, []);
+    }, [dispatch]);
 
   return (
     <>
@@ -49,9 +58,9 @@ const HeroImages = () => {
             <div className="hero-content flex-col lg:flex-row-reverse">
                 <div className="text-center lg:text-left">
                     {
-                        loading ? (
-                            <div class="flex justify-center items-center h-full">
-                                <img class="h-16 w-16" src="https://icons8.com/preloaders/preloaders/1488/Iphone-spinner-2.gif" alt="" />
+                        imagesState.loading ? (
+                            <div className="flex justify-center items-center h-full">
+                                <img className="h-16 w-16" src="https://icons8.com/preloaders/preloaders/1488/Iphone-spinner-2.gif" alt="" />
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
@@ -67,7 +76,7 @@ const HeroImages = () => {
                                     <tbody>
                                     {/* row 1 */}
                                         {
-                                            data.map((item) => (
+                                            imagesState.images.map((item) => (
                                                 <tr key={item._id}>
                                                     <td>
                                                     <div className="flex items-center space-x-3">
